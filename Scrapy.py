@@ -58,10 +58,10 @@ class Scrapy(scrapy.Spider):
 
 
     def scrape(self, response):
-            #检验是否标准格式，如不是则刷新
+        
             r = response.xpath("//li[@class='gl-item']")
 
-            if len(r) == 0: #刷新
+            if len(r) == 0: #Refresh the page
                 time.sleep(3)
                 yield scrapy.Request(response.url, callback = self.p, dont_filter = True)
             else:
@@ -69,7 +69,7 @@ class Scrapy(scrapy.Spider):
                 redis_item['url'] = response.url
                 yield redis_item
                 """
-                #爬+翻页xxxxxxxxxxxxxxxxxxxxxxxxxx
+                #xxxxxxxxxxxxxxxxxxxxxxxxxx
                 for i in r:
                     sku = i.xpath("div/@data-sku").extract()[0]
                     name = i.xpath("div/div[starts-with(@class, 'p-name')]/a/em/text()").strip()
@@ -81,36 +81,32 @@ class Scrapy(scrapy.Spider):
                 """
 
     def p(self, response):
-            #再次检验标准格式，其他格式，以及空白页
+            
             if len(response.xpath("//li[@class='gl-item']")) == 0:
 
-                r = response.xpath("//div[@class='item-inner']") #其他格式
+                r = response.xpath("//div[@class='item-inner']")
                 if len(r) == 0:
                     print("Nothing on %s!", response.url)
                 else:
                     for i in r:
-                        #从大类进去，大类不行再小类
                         yield scrapy.Request("https://" + i.xpath("h3/a/@href").extract()[0], callback = self.other, dont_filter = True)
             else:
-                #标准
+                
                 redis_item = JdRedisItem()
                 redis_item['url'] = response.url
                 yield redis_item
 
     def other(self, response):
-            #爬取其他格式???，并预防特殊情况
+            
             a = response.xpath("//li[@class='gl-item']")
             #b = response.xpath("//div[@class='p-btn']") #ul "clearfix" is not available
 
             if len(a) != 0:
-                #标准
                 redis_item = JdRedisItem()
                 redis_item['url'] = response.url
                 yield redis_item
 
 #            elif len(b) != 0:
-#                #其他格式，应该只有一种
-#                #翻页方法类似
 #                #for i in b:
 #                #   id = i.xpath("a[last()]/@data-id")
 #                #   name = ...
@@ -122,7 +118,6 @@ class Scrapy(scrapy.Spider):
                 if len(r) == 0:
                     print("Something weird happening on %s!", response.url)
                 else:
-                    #从小类进
                     for i in r:
                         a = i.xpath("div[@class='ext']")
                         for ia in a:
