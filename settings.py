@@ -123,59 +123,37 @@ ITEM_PIPELINES = {
 
 
 #Redis
-# 启用Redis调度存储请求队列
+# Default Redis Scheduler
 SCHEDULER = "scrapy_redis.scheduler.Scheduler"
 
-# 确保所有的爬虫通过Redis去重
+# Default Redis duplicate filter
 DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
 #SCHEDULER_DUPEFILTER_KEY = '%(spider)s:dupefilter'
 
-# 默认请求序列化使用的是pickle 但是我们可以更改为其他类似的。PS：这玩意儿2.X的可以用。3.X的不能用
-# SCHEDULER_SERIALIZER = "scrapy_redis.picklecompat"
+#SCHEDULER_SERIALIZER = "scrapy_redis.picklecompat"
 #SCHEDULER_QUEUE_KEY = '%(spider)s:requests'
 
-# 不清除Redis队列、这样可以暂停/恢复 爬取
+# Does the scheduler clear after a pause?
 SCHEDULER_PERSIST = True
 SCHEDULER_FLUSH_ON_START = True
 
-# 使用优先级调度请求队列 （默认使用）
+# Default Redis queue
 SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.PriorityQueue'
-# 可选用的其它队列
+# Other queues
 # SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.FifoQueue'
 # SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.LifoQueue'
 
-# 最大空闲时间防止分布式爬虫因为等待而关闭
-# 这只有当上面设置的队列类是SpiderQueue或SpiderStack时才有效
-# 并且当您的蜘蛛首次启动时，也可能会阻止同一时间启动（由于队列为空）
-#SCHEDULER_IDLE_BEFORE_CLOSE = 20
-
-# 序列化项目管道作为redis Key存储
-#REDIS_ITEMS_KEY = '%(spider)s:items'
-
-# 默认使用ScrapyJSONEncoder进行项目序列化
 # You can use any importable path to a callable object.
 #REDIS_ITEMS_SERIALIZER = 'json.dumps'
 
-# 指定连接到redis时使用的端口和地址（可选）
 #REDIS_HOST = 'localhost'
 #REDIS_PORT = 6379
 
-# 指定用于连接redis的URL（可选）
-# 如果设置此项，则此项优先级高于设置的REDIS_HOST 和 REDIS_PORT
+# Overrides REDIS_HOST and REDIS_PORT if set
 REDIS_URL = 'redis://user:test@localhost:6379'
 
-# 自定义的redis参数（连接超时之类的）
-# REDIS_PARAMS  = {}
-
-# 自定义redis客户端类
-# REDIS_PARAMS['redis_cls'] = 'myproject.RedisClient'
-
-# 如果为True，则使用redis的'spop'进行操作。
-# 如果需要避免起始网址列表出现重复，这个选项非常有用。开启此选项urls必须通过sadd添加，否则会出现类型错误。
+# Must use sadd and spop if set, instead of lpush and lpop
 REDIS_START_URLS_AS_SET = True
 
-# RedisSpider和RedisCrawlSpider默认 start_urls 键
+# Default start url key
 REDIS_START_URLS_KEY = '%(name)s:start_urls'
-
-# 设置redis使用utf-8之外的编码
-# REDIS_ENCODING = 'latin1'
