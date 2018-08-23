@@ -27,7 +27,7 @@ class MyHttpProxyMiddleware(HttpProxyMiddleware):
         request.headers['user-agent']          = random.choice(helper.change()[1]['user-agent'])
         request.headers['x-client-data']       = helper.change()[1]['x-client-data']
 
-    def process_response(self, request, response, spider): #对response进行拦截
+    def process_response(self, request, response, spider):
         return response
 """
 
